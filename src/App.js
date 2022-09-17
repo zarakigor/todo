@@ -10,7 +10,8 @@ function App() {
     <div className="App">
       {user ? (
         <div>
-          <Form /> {todoList}
+          <Form />
+          {todoList}
         </div>
       ) : (
         <Login />
