@@ -5,22 +5,25 @@ import Todo from "./components/Todo";
 const Context = createContext();
 
 function ContextProvider({ children }) {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const user = useState(JSON.parse(localStorage.getItem("user")));
   const [newTodo, setNewTodo] = useState("");
   const [datalar, setDatalar] = useState([]);
 
-  useEffect(() => {
+  function getData() {
     fetch(`https://6314d833fc9dc45cb4f50497.mockapi.io/todos`)
       .then((res) => res.json())
       .then((data) => {
-        //console.log(data)
         setDatalar(data);
       });
+  }
+
+  useEffect(() => {
+    getData();
   }, []);
 
   const todoList = datalar.map((item) => (
     <Todo
-      key={nanoid()}
+      key={item.id}
       content={item.content}
       isCompleted={item.isCompleted}
       id={item.id}
@@ -29,8 +32,43 @@ function ContextProvider({ children }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    // fetch ile API a ekle
-    // setNewTodo("") yazarak sıfırla
+    fetch("https://6314d833fc9dc45cb4f50497.mockapi.io/todos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: newTodo,
+        isCompleted: false,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          getData();
+        } else if (!response.ok) {
+          throw Error(response.statusText);
+        }
+      })
+      .then(setNewTodo(""))
+      .then(console.log(newTodo));
+  }
+
+  function handleDelete(id) {
+    fetch(`https://6314d833fc9dc45cb4f50497.mockapi.io/todos/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          //setDatalar(datalar.filter((todo) => id !== todo.id));
+          getData();
+        } else if (!response.ok) {
+          throw Error(response.statusText);
+        }
+      })
+      .then(console.log("sil"));
   }
 
   function handleChange(event) {
@@ -40,6 +78,10 @@ function ContextProvider({ children }) {
 
   function handleLogin(event) {
     localStorage.setItem("user", JSON.stringify(event.target[0].value));
+  }
+
+  function handleEdit(id) {
+    console.log(id);
   }
 
   console.log(datalar);
@@ -52,6 +94,8 @@ function ContextProvider({ children }) {
         handleSubmit,
         handleLogin,
         todoList,
+        handleEdit,
+        handleDelete,
       }}
     >
       {children}
