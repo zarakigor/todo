@@ -31,48 +31,76 @@ function Todo(props) {
         }
       });
     }
-    //console.log(id);
+  }
+
+  function handleIsCompleted(id) {
+    fetch(`https://6314d833fc9dc45cb4f50497.mockapi.io/todos/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isCompleted: !props.isCompleted,
+      }),
+    }).then((response) => {
+      if (response.ok) {
+        getData();
+      } else if (!response.ok) {
+        throw Error(response.statusText);
+      }
+    });
   }
 
   const viewTodo = (
-    <div
-      key="key"
-      className={`todo__card ${props.isCompleted ? "completed" : "incomplete"}`}
-    >
-      <p>{props.content}</p>
-      <button
-        onClick={() => {
-          setIsEditing(true);
-          setEditedContent(props.content);
-        }}
-      >
-        Edit
-      </button>
-      <button onClick={() => handleDelete(props.id)}>Delete</button>
+    <div key="key" className={"todo__card "}>
+      <div className={`${props.isCompleted ? "completed" : "incomplete"}`}>
+        <input
+          id={props.id}
+          type="checkbox"
+          defaultChecked={props.isCompleted}
+          onChange={() => handleIsCompleted(props.id)}
+        ></input>
+        <label htmlFor={props.id}>{props.content}</label>
+      </div>
+      <div className="btn__box">
+        <button
+          className="btn"
+          onClick={() => {
+            setIsEditing(true);
+            setEditedContent(props.content);
+          }}
+        >
+          Edit
+        </button>
+        <button className="btn" onClick={() => handleDelete(props.id)}>
+          Delete
+        </button>
+      </div>
     </div>
   );
 
   const editTodo = (
     <div>
-      <p>editing...</p>
-      <form onSubmit={handleUpdate}>
-        <label htmlFor={props.id}> Edit for "{props.content}"</label>
+      <form onSubmit={handleUpdate} className="edit__box">
         <input
           id={props.id}
           type="text"
           value={editedContent || props.content}
           onChange={handleEdit}
         ></input>
-        <button>Save</button>
+        <div className="btn__box">
+          <button className="btn">Save</button>
+          <button
+            className="btn"
+            onClick={() => {
+              setIsEditing(false);
+              setEditedContent("");
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
-      <button
-        onClick={() => {
-          setIsEditing(false);
-          setEditedContent("");
-        }}
-      >
-        Cancel
-      </button>
     </div>
   );
 
