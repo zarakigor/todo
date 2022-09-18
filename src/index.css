@@ -45,10 +45,25 @@ body {
   text-overflow: ellipsis;
 }
 
+.login__box {
+  margin-top: 10em;
+  display: flex;
+  justify-content: center;
+}
+
+.login__box input {
+  height: 100%;
+  font-size: 1.5rem;
+}
+
 .form__box {
   display: flex;
   justify-content: center;
   margin-bottom: 3em;
+}
+
+.form__box input {
+  font-size: 1.5rem;
 }
 
 .edit__box {
@@ -62,7 +77,7 @@ body {
 
 .btn__box {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   width: 50%;
 }
 
