@@ -2,11 +2,12 @@ import { useState, useContext } from "react";
 import { Context } from "../Context";
 
 function Form() {
-  const { newTodo, handleChange, handleSubmit } = useContext(Context);
+  const { user, newTodo, handleChange, handleSubmit } = useContext(Context);
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <h1 className="title">What's up {user}!</h1>
+      <form onSubmit={handleSubmit} className="form__box">
         <input
           type="text"
           placeholder="Enter todo here"
