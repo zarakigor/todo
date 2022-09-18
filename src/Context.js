@@ -7,13 +7,14 @@ const Context = createContext();
 function ContextProvider({ children }) {
   const user = useState(JSON.parse(localStorage.getItem("user")));
   const [newTodo, setNewTodo] = useState("");
-  const [datalar, setDatalar] = useState([]);
+  const [todoData, setTodoData] = useState([]);
+  const [editedContent, setEditedContent] = useState("");
 
   function getData() {
     fetch(`https://6314d833fc9dc45cb4f50497.mockapi.io/todos`)
       .then((res) => res.json())
       .then((data) => {
-        setDatalar(data);
+        setTodoData(data);
       });
   }
 
@@ -21,7 +22,7 @@ function ContextProvider({ children }) {
     getData();
   }, []);
 
-  const todoList = datalar.map((item) => (
+  const todoList = todoData.map((item) => (
     <Todo
       key={item.id}
       content={item.content}
@@ -32,25 +33,29 @@ function ContextProvider({ children }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    fetch("https://6314d833fc9dc45cb4f50497.mockapi.io/todos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: newTodo,
-        isCompleted: false,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          getData();
-        } else if (!response.ok) {
-          throw Error(response.statusText);
-        }
+    if (newTodo.trim().length > 2) {
+      fetch("https://6314d833fc9dc45cb4f50497.mockapi.io/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: newTodo,
+          isCompleted: false,
+        }),
       })
-      .then(setNewTodo(""))
-      .then(console.log(newTodo));
+        .then((response) => {
+          if (response.ok) {
+            getData();
+          } else if (!response.ok) {
+            throw Error(response.statusText);
+          }
+        })
+        .then(setNewTodo(""))
+        .then(console.log(newTodo));
+    } else {
+      alert("TODO must contain at least 3 characters");
+    }
   }
 
   function handleDelete(id) {
@@ -62,7 +67,7 @@ function ContextProvider({ children }) {
     })
       .then((response) => {
         if (response.ok) {
-          //setDatalar(datalar.filter((todo) => id !== todo.id));
+          //setTodoData(todoData.filter((todo) => id !== todo.id));
           getData();
         } else if (!response.ok) {
           throw Error(response.statusText);
@@ -80,22 +85,21 @@ function ContextProvider({ children }) {
     localStorage.setItem("user", JSON.stringify(event.target[0].value));
   }
 
-  function handleEdit(id) {
-    console.log(id);
-  }
-
-  console.log(datalar);
+  console.log(todoData);
   return (
     <Context.Provider
       value={{
         user,
         newTodo,
+        getData,
         handleChange,
         handleSubmit,
         handleLogin,
         todoList,
-        handleEdit,
+
         handleDelete,
+        editedContent,
+        setEditedContent,
       }}
     >
       {children}
