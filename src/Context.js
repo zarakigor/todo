@@ -1,11 +1,10 @@
 import React, { useState, useEffect, createContext } from "react";
-import { nanoid } from "nanoid";
 import Todo from "./components/Todo";
 
 const Context = createContext();
 
 function ContextProvider({ children }) {
-  const user = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [newTodo, setNewTodo] = useState("");
   const [todoData, setTodoData] = useState([]);
   const [editedContent, setEditedContent] = useState("");
@@ -51,8 +50,7 @@ function ContextProvider({ children }) {
             throw Error(response.statusText);
           }
         })
-        .then(setNewTodo(""))
-        .then(console.log(newTodo));
+        .then(setNewTodo(""));
     } else {
       alert("TODO must contain at least 3 characters");
     }
@@ -64,20 +62,16 @@ function ContextProvider({ children }) {
       headers: {
         "Content-Type": "application/json",
       },
-    })
-      .then((response) => {
-        if (response.ok) {
-          //setTodoData(todoData.filter((todo) => id !== todo.id));
-          getData();
-        } else if (!response.ok) {
-          throw Error(response.statusText);
-        }
-      })
-      .then(console.log("sil"));
+    }).then((response) => {
+      if (response.ok) {
+        getData();
+      } else if (!response.ok) {
+        throw Error(response.statusText);
+      }
+    });
   }
 
   function handleChange(event) {
-    // update için de bu kullanılabilir
     setNewTodo(event.target.value);
   }
 
@@ -85,7 +79,6 @@ function ContextProvider({ children }) {
     localStorage.setItem("user", JSON.stringify(event.target[0].value));
   }
 
-  console.log(todoData);
   return (
     <Context.Provider
       value={{
@@ -96,7 +89,6 @@ function ContextProvider({ children }) {
         handleSubmit,
         handleLogin,
         todoList,
-
         handleDelete,
         editedContent,
         setEditedContent,
