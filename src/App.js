@@ -7,11 +7,10 @@ function App() {
   const { user, todoList } = useContext(Context);
 
   return (
-    <div className="App">
+    <div className="container">
       {user ? (
         <div>
-          <Form />
-          {todoList}
+          <Form /> {todoList}
         </div>
       ) : (
         <Login />
