@@ -5,7 +5,7 @@ function Login() {
   const { handleLogin } = useContext(Context);
 
   return (
-    <div>
+    <div className="login__box">
       <form onSubmit={handleLogin}>
         <input
           type="text"
